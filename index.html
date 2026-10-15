@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Anchor: the fast, free archive tool for Windows</title>
-<meta name="description" content="Anchor opens ZIP, 7Z, RAR, TAR, ZST, ISO and more, extracts many-file archives about 2× faster than 7-Zip and WinRAR, repairs broken downloads and checks archives before extracting. Free for Windows 10 and 11.">
+<meta name="description" content="Anchor opens ZIP, 7Z, RAR, TAR, ZST, ISO and more, extracts many-file archives about 2× faster than 7-Zip and WinRAR, repairs broken downloads and checks archives before extracting. Free for Windows 10 and 11, and Linux.">
 <meta name="theme-color" content="#000000">
 <link rel="icon" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/icon.png">
@@ -46,9 +46,9 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
         Download for Windows
       </a>
-      <p class="meta" data-download-meta>Free · Windows 10&nbsp;and&nbsp;11 · x64 and ARM64</p>
+      <p class="meta" data-download-meta>Free · Windows 10&nbsp;and&nbsp;11 and Linux · x64 and ARM64</p>
       <button class="switch" type="button" data-arch-switch hidden></button>
-      <p class="note" data-platform-note hidden>Anchor is a Windows app. Open this page on a Windows PC to download it.</p>
+      <p class="note" data-platform-note hidden>Anchor is for Windows and Linux. Open this page on a Windows or Linux PC to download it.</p>
     </div>
     <div class="stage reveal" style="--d: 5">
       <img class="hero-shot" src="assets/shots/link-preview.webp" alt="Anchor showing the contents of a ZIP archive opened from a link, with a preview of an image" width="1239" height="780" data-tilt>
@@ -141,19 +141,25 @@
     <div class="grid-bg" aria-hidden="true"></div>
     <div class="mark small reveal"><img src="assets/logo.png" alt="" width="88" height="88"></div>
     <h2 class="reveal">Get Anchor</h2>
-    <p class="sub reveal">Free for Windows 10 and 11. No admin rights needed, and it keeps itself up to date.</p>
+    <p class="sub reveal">Free for Windows 10 and 11, and Linux. No admin rights needed, and it tells you when there is a new version.</p>
     <div class="cta reveal">
       <a class="btn btn-primary" href="https://github.com/realhenners/anchor-releases/releases/latest" data-download>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
         Download for Windows
       </a>
-      <p class="meta" data-download-meta>Free · Windows 10&nbsp;and&nbsp;11 · x64 and ARM64</p>
+      <p class="meta" data-download-meta>Free · Windows 10&nbsp;and&nbsp;11 and Linux · x64 and ARM64</p>
     </div>
 
     <div class="files card reveal" data-files hidden>
       <h3>All downloads <span data-version></span></h3>
       <div data-file-list></div>
       <p class="small">Check a download in PowerShell: <code>Get-FileHash .\Anchor-Setup-&lt;version&gt;.exe</code> and compare it with the SHA-256 above.</p>
+    </div>
+
+    <div class="smartscreen card reveal">
+      <h3>On Linux</h3>
+      <p><b>AppImage</b>, for any distribution: make it runnable, then start it: <code>chmod +x Anchor-*.AppImage</code> and <code>./Anchor-*.AppImage</code></p>
+      <p><b>.deb</b>, for Ubuntu and Debian: <code>sudo apt install ./Anchor-*-amd64.deb</code> adds Anchor to your apps, "Open with Anchor" for archives, and the <code>anchor</code> command.</p>
     </div>
 
     <div class="smartscreen card reveal">
@@ -173,7 +179,7 @@
       <details class="reveal"><summary>Is it faster for every archive?</summary><div><p>It's about 2× faster on archives with many files, which is most of them: mods, projects, photos, backups. With one or a few large files every tool waits on decompression and the results are about the same. All the measured numbers are in the Speed section.</p></div></details>
       <details class="reveal"><summary>Can it create RAR archives?</summary><div><p>Anchor opens and extracts RAR, but creates ZIP, 7Z, TAR.ZST and TAR.GZ. The RAR format is proprietary.</p></div></details>
       <details class="reveal"><summary>Is it open source?</summary><div><p>Anchor is free, closed-source software. It builds on open-source parts, credited with their licences in the app: 7-Zip (LGPL), par2cmdline (GPL) and Electron (MIT).</p></div></details>
-      <details class="reveal"><summary>Is there a Mac or Linux version?</summary><div><p>Not yet. Anchor is made for Windows 10 and 11 on x64 and ARM64 PCs.</p></div></details>
+      <details class="reveal"><summary>Does it work on Linux or Mac?</summary><div><p>Linux, yes: x64 and ARM64, as an AppImage that runs on any distribution or a .deb for Ubuntu and Debian. The Explorer menu and setup window are Windows-only. There is no Mac version yet.</p></div></details>
       <details class="reveal"><summary>How do I uninstall it?</summary><div><p>Settings › Apps › Installed apps › Anchor › Uninstall. Your settings can be removed too.</p></div></details>
     </div>
   </section>

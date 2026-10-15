@@ -157,9 +157,27 @@ async function architecture() {
     return 'x64';
   }
 }
+// every installer in a release, by system, processor and package type
+const KINDS = [
+  { key: 'windows-x64', label: 'Windows · x64', test: /Setup-[\d.]+\.exe$/ },
+  { key: 'windows-arm64', label: 'Windows · ARM64', test: /Setup-[\d.]+-arm64\.exe$/ },
+  { key: 'linux-x64', label: 'Linux AppImage · x64', test: /x86_64\.AppImage$/ },
+  { key: 'linux-arm64', label: 'Linux AppImage · ARM64', test: /arm64\.AppImage$/ },
+  { key: 'deb-x64', label: 'Linux .deb · x64', test: /amd64\.deb$/ },
+  { key: 'deb-arm64', label: 'Linux .deb · ARM64', test: /arm64\.deb$/ },
+];
+const SYSTEM = { windows: 'Windows 10 and 11', linux: 'AppImage for any Linux' };
+function system() {
+  const ua = navigator.userAgent;
+  if (/Windows/i.test(ua) && !/Windows Phone/i.test(ua)) return 'windows';
+  if (/Linux|X11|CrOS/i.test(ua) && !/Android/i.test(ua)) return 'linux';
+  return 'other';
+}
+// the release notes list each installer's SHA-256 (and a VirusTotal scan for the Windows ones)
+const checksum = (body, name) => (body.match(new RegExp(name.replace(/[.]/g, '\\.') + ' \\| `([0-9a-f]{64})`')) || [])[1];
 async function downloads() {
-  const windows = /Windows/i.test(navigator.userAgent) && !/Windows Phone/i.test(navigator.userAgent);
-  if (!windows && $('[data-platform-note]')) $('[data-platform-note]').hidden = false;
+  const os = system();
+  if (os === 'other' && $('[data-platform-note]')) $('[data-platform-note]').hidden = false;
   let release;
   try {
     const response = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`);
@@ -169,26 +187,25 @@ async function downloads() {
     return; // the buttons keep pointing at the latest release page
   }
   const version = release.tag_name.replace(/^v/, '');
-  const builds = {
-    x64: release.assets.find((a) => /Setup-[\d.]+\.exe$/.test(a.name)),
-    arm64: release.assets.find((a) => /-arm64\.exe$/.test(a.name)),
-  };
-  // the release notes list each installer's SHA-256 and its VirusTotal scan
-  const sha = (name) => (release.body.match(new RegExp(`${name.replace(/\./g, '\\.')} \\| \`([0-9a-f]{64})\``)) || [])[1];
+  const builds = Object.fromEntries(KINDS.map((kind) => [kind.key, release.assets.find((a) => kind.test.test(a.name))]));
+  // Linux visitors get Linux files, everyone else the Windows ones
+  const target = os === 'linux' && builds['linux-x64'] ? 'linux' : 'windows';
   let arch = await architecture();
   const point = () => {
-    const build = builds[arch] || builds.x64;
+    const build = builds[`${target}-${arch}`] || builds[`${target}-x64`];
     if (!build) return;
     $$('[data-download]').forEach((a) => {
       a.href = build.browser_download_url;
       a.removeAttribute('target');
+      // the button's label is its last text node, after the icon
+      const label = [...a.childNodes].reverse().find((node) => node.nodeType === 3 && node.textContent.trim());
+      if (label && /Download for/.test(label.textContent)) label.textContent = ` Download for ${target === 'linux' ? 'Linux' : 'Windows'} `;
     });
-    $$('[data-download-meta]').forEach((p) => (p.textContent = `Version ${version} · ${arch === 'arm64' ? 'ARM64' : 'x64'} · ${size(build.size)} · Windows 10 and 11`));
-    const other = arch === 'arm64' ? 'x64' : 'ARM64';
+    $$('[data-download-meta]').forEach((p) => (p.textContent = `Version ${version} · ${arch === 'arm64' ? 'ARM64' : 'x64'} · ${size(build.size)} · ${SYSTEM[target]}`));
     const switcher = $('[data-arch-switch]');
     if (!switcher) return;
-    switcher.hidden = !builds.arm64 || !windows;
-    switcher.textContent = `Need the ${other} version?`;
+    switcher.hidden = !builds[`${target}-arm64`] || os === 'other';
+    switcher.textContent = `Need the ${arch === 'arm64' ? 'x64' : 'ARM64'} version?`;
   };
   $('[data-arch-switch]')?.addEventListener('click', () => {
     arch = arch === 'arm64' ? 'x64' : 'arm64';
@@ -200,15 +217,15 @@ async function downloads() {
   $('[data-version]').textContent = `· version ${version}`;
   // built with DOM methods: names and links come from the GitHub API
   const make = (tag, className, text, href) => Object.assign(document.createElement(tag), { className, textContent: text }, href ? { href } : {});
-  $('[data-file-list]').replaceChildren(...Object.entries(builds)
-    .filter(([, build]) => build)
-    .map(([name, build]) => {
-      const row = make('div', 'file');
-      row.append(make('a', 'name', build.name, build.browser_download_url), make('span', 'size', `${name === 'arm64' ? 'ARM64' : 'x64'} · ${size(build.size)}`));
-      const hash = sha(build.name);
-      if (hash) row.append(make('span', 'sha', `SHA-256 ${hash}`), make('a', 'vt', 'VirusTotal scan ↗', `https://www.virustotal.com/gui/file/${hash}`));
-      return row;
-    }));
+  $('[data-file-list]').replaceChildren(...KINDS.filter((kind) => builds[kind.key]).map((kind) => {
+    const build = builds[kind.key];
+    const row = make('div', 'file');
+    row.append(make('a', 'name', build.name, build.browser_download_url), make('span', 'size', `${kind.label} · ${size(build.size)}`));
+    const hash = checksum(release.body, build.name);
+    if (hash) row.append(make('span', 'sha', `SHA-256 ${hash}`));
+    if (hash && release.body.includes(`virustotal.com/gui/file/${hash}`)) row.append(make('a', 'vt', 'VirusTotal scan ↗', `https://www.virustotal.com/gui/file/${hash}`));
+    return row;
+  }));
   $('[data-files]').hidden = false;
   seen.observe($('[data-files]'));
 }

@@ -48,16 +48,17 @@ function card(release, latest) {
   notes.innerHTML = markdown(release.body || '');
   article.append(header, notes);
 
-  const installers = release.assets.filter((a) => a.name.endsWith('.exe')).sort((a, b) => (/arm64/.test(a.name) ? 1 : 0) - (/arm64/.test(b.name) ? 1 : 0));
+  // Windows first, then the AppImages and .deb packages, x64 before ARM64 (KINDS in ../script.js)
+  const installers = KINDS.map((kind) => [kind, release.assets.find((a) => kind.test.test(a.name))]).filter(([, asset]) => asset);
   if (installers.length) {
     const assets = element('div', 'assets');
-    for (const asset of installers) {
-      const arm = /arm64/i.test(asset.name);
+    for (const [kind, asset] of installers) {
       const row = element('div', 'asset');
-      const button = element('a', `btn btn-small${latest && !arm ? ' btn-primary' : ''}`, `Download ${arm ? 'ARM64' : 'x64'} · ${size(asset.size)}`, asset.browser_download_url);
+      const button = element('a', `btn btn-small${latest && kind.key === 'windows-x64' ? ' btn-primary' : ''}`, `${kind.label} · ${size(asset.size)}`, asset.browser_download_url);
       row.append(button);
-      const hash = ((release.body || '').match(new RegExp(`${asset.name.replace(/\./g, '\\.')} \\| \`([0-9a-f]{64})\``)) || [])[1];
-      if (hash) row.append(element('a', 'vt', 'VirusTotal scan ↗', `https://www.virustotal.com/gui/file/${hash}`), element('span', 'sha', `SHA-256 ${hash}`));
+      const hash = checksum(release.body || '', asset.name);
+      if (hash && (release.body || '').includes(`virustotal.com/gui/file/${hash}`)) row.append(element('a', 'vt', 'VirusTotal scan ↗', `https://www.virustotal.com/gui/file/${hash}`));
+      if (hash) row.append(element('span', 'sha', `SHA-256 ${hash}`));
       assets.append(row);
     }
     article.append(assets);
