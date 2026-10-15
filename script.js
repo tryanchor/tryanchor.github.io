@@ -1,6 +1,7 @@
 // Anchor website: scroll reveals, the hero screenshot's tilt, the benchmark race, counters, the FAQ,
 // and download buttons that always point at the newest installer for the visitor's PC.
 // Every movement goes through an easing curve or a spring; nothing moves at a constant speed.
+// Shared by every page: each part below only runs when its page has the elements for it.
 const REPO = 'realhenners/anchor-releases';
 const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
@@ -30,7 +31,7 @@ function tilt() {
   const k = ease.inOutCubic(clamp((innerHeight * 0.95 - top) / (innerHeight * 0.6)));
   shot.style.transform = `rotateX(${(1 - k) * 26}deg) scale(${0.9 + k * 0.1})`;
 }
-if (!calm) {
+if (shot && !calm) {
   let queued = false;
   addEventListener('scroll', () => {
     if (queued) return;
@@ -51,7 +52,7 @@ const SETS = {
   large: { times: [406, 583, 354], caption: 'One 200 MB file: every tool waits on decompression, and 7-Zip is a little quicker here.' },
 };
 const race = $('[data-race]');
-const lanes = $$('.lane', race);
+const lanes = race ? $$('.lane', race) : [];
 let raceRun = 0;
 function runRace(name) {
   const { times, caption } = SETS[name];
@@ -76,7 +77,7 @@ function runRace(name) {
   requestAnimationFrame(frame);
 }
 let current = 'small';
-new IntersectionObserver((items, observer) => {
+if (race) new IntersectionObserver((items, observer) => {
   if (!items[0].isIntersecting) return;
   observer.disconnect();
   runRace(current);
@@ -88,7 +89,7 @@ $$('[data-set]').forEach((tab) =>
     runRace(current);
   })
 );
-$('[data-race-replay]').addEventListener('click', () => runRace(current));
+$('[data-race-replay]')?.addEventListener('click', () => runRace(current));
 
 // ---------- counters ease up to their value ----------
 const counted = new IntersectionObserver((items) => {
@@ -118,7 +119,7 @@ const NUMBERS = [
   ['1 large file, 200 MB', [['ZIP', 406, 354, 583], ['7Z', 312, 244, 335], ['RAR', 641, 566, 326], ['TAR.GZ', 448, 550, 759], ['TAR.ZST', 205, 298, 238]]],
 ];
 const seconds = (ms) => (ms === null ? 'over 2 min' : `${(ms / 1000).toFixed(2)} s`);
-$('[data-numbers]').innerHTML = `<thead><tr><th>Archive</th><th>Anchor</th><th>7-Zip 26.04</th><th>WinRAR 7.23</th></tr></thead><tbody>${NUMBERS.flatMap(([set, rows]) =>
+if ($('[data-numbers]')) $('[data-numbers]').innerHTML = `<thead><tr><th>Archive</th><th>Anchor</th><th>7-Zip 26.04</th><th>WinRAR 7.23</th></tr></thead><tbody>${NUMBERS.flatMap(([set, rows]) =>
   rows.map(([format, ...times]) => {
     const best = Math.min(...times.filter((t) => t !== null));
     return `<tr><td>${set} · ${format}</td>${times.map((t) => `<td>${t === best ? `<b>${seconds(t)}</b>` : seconds(t)}</td>`).join('')}</tr>`;
@@ -158,7 +159,7 @@ async function architecture() {
 }
 async function downloads() {
   const windows = /Windows/i.test(navigator.userAgent) && !/Windows Phone/i.test(navigator.userAgent);
-  if (!windows) $('[data-platform-note]').hidden = false;
+  if (!windows && $('[data-platform-note]')) $('[data-platform-note]').hidden = false;
   let release;
   try {
     const response = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`);
@@ -185,15 +186,17 @@ async function downloads() {
     $$('[data-download-meta]').forEach((p) => (p.textContent = `Version ${version} · ${arch === 'arm64' ? 'ARM64' : 'x64'} · ${size(build.size)} · Windows 10 and 11`));
     const other = arch === 'arm64' ? 'x64' : 'ARM64';
     const switcher = $('[data-arch-switch]');
+    if (!switcher) return;
     switcher.hidden = !builds.arm64 || !windows;
     switcher.textContent = `Need the ${other} version?`;
   };
-  $('[data-arch-switch]').addEventListener('click', () => {
+  $('[data-arch-switch]')?.addEventListener('click', () => {
     arch = arch === 'arm64' ? 'x64' : 'arm64';
     point();
   });
   point();
-  // the full list with checksums
+  // the full list with checksums (home page only)
+  if (!$('[data-files]')) return;
   $('[data-version]').textContent = `· version ${version}`;
   // built with DOM methods: names and links come from the GitHub API
   const make = (tag, className, text, href) => Object.assign(document.createElement(tag), { className, textContent: text }, href ? { href } : {});
