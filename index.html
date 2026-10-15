@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anchor: the fast, free archive tool for Windows</title>
+<meta name="description" content="Anchor opens ZIP, 7Z, RAR, TAR, ZST, ISO and more, extracts many-file archives about 2× faster than 7-Zip and WinRAR, repairs broken downloads and checks archives before extracting. Free for Windows 10 and 11.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://getanchor.github.io/">
+<meta property="og:title" content="Anchor: the fast, free archive tool for Windows">
+<meta property="og:description" content="2× faster than 7-Zip and WinRAR on archives with many files. Opens ZIPs from a link, repairs broken downloads, flags disguised programs. Free.">
+<meta property="og:image" content="https://getanchor.github.io/assets/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="#top" aria-label="Anchor, back to top"><img src="assets/logo.png" alt="" width="26" height="26"><span>ANCHOR</span></a>
+  <nav class="links" aria-label="Sections">
+    <a href="#speed">Speed</a>
+    <a href="#features">Features</a>
+    <a href="#compare">Compare</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <a class="btn btn-small" href="#download" data-download>Download</a>
+</header>
+
+<main id="top">
+  <!-- hero: the banner's look -->
+  <section class="hero">
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="mark reveal" style="--d: 0"><img src="assets/logo.png" alt="Anchor logo" width="132" height="132"></div>
+    <h1 class="reveal" style="--d: 1">Anchor</h1>
+    <p class="lead reveal" style="--d: 2">The archive tool for Windows that opens anything, extracts faster, and fixes what is broken.</p>
+    <ul class="pills reveal" style="--d: 3" aria-label="Formats">
+      <li>ZIP</li><li>7Z</li><li>RAR</li><li>TAR</li><li>GZ</li><li>ZST</li><li>ISO</li>
+    </ul>
+    <div class="cta reveal" style="--d: 4">
+      <a class="btn btn-primary" href="https://github.com/realhenners/anchor-releases/releases/latest" data-download>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+        Download for Windows
+      </a>
+      <p class="meta" data-download-meta>Free · Windows 10&nbsp;and&nbsp;11 · x64 and ARM64</p>
+      <button class="switch" type="button" data-arch-switch hidden></button>
+      <p class="note" data-platform-note hidden>Anchor is a Windows app. Open this page on a Windows PC to download it.</p>
+    </div>
+    <div class="stage reveal" style="--d: 5">
+      <img class="hero-shot" src="assets/shots/link-preview.webp" alt="Anchor showing the contents of a ZIP archive opened from a link, with a preview of an image" width="1239" height="780" data-tilt>
+    </div>
+  </section>
+
+  <!-- speed -->
+  <section class="section" id="speed">
+    <p class="kicker reveal">Speed</p>
+    <h2 class="reveal">Same archive. Three extractors.</h2>
+    <p class="sub reveal">Windows spends most of an extraction creating files, because antivirus checks each one. 7-Zip and WinRAR write them one at a time; Anchor decodes the archive once and writes up to 32 at the same time.</p>
+
+    <div class="tabs reveal" role="tablist" aria-label="Benchmark">
+      <button role="tab" aria-selected="true" data-set="small">4,000 small files</button>
+      <button role="tab" aria-selected="false" data-set="mod">Mod pack, 603 files</button>
+      <button role="tab" aria-selected="false" data-set="large">One large file</button>
+    </div>
+
+    <div class="race card reveal" data-race>
+      <div class="lane anchor"><span class="name">Anchor</span><span class="track"><span class="fill"></span></span><span class="time">0.00 s</span></div>
+      <div class="lane"><span class="name">WinRAR <small>7.23</small></span><span class="track"><span class="fill"></span></span><span class="time">0.00 s</span></div>
+      <div class="lane"><span class="name">7-Zip <small>26.04</small></span><span class="track"><span class="fill"></span></span><span class="time">0.00 s</span></div>
+      <div class="race-foot">
+        <p class="caption" data-race-caption>A ZIP with 4,000 small files, played back in real time.</p>
+        <button class="btn btn-ghost btn-small" type="button" data-race-replay>Run again</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat card reveal" style="--d: 0"><b data-count="2.3" data-suffix="×">0×</b><span>faster than 7-Zip</span></div>
+      <div class="stat card reveal" style="--d: 1"><b data-count="2.1" data-suffix="×">0×</b><span>faster than WinRAR</span></div>
+      <div class="stat card reveal" style="--d: 2"><b data-count="32" data-decimals="0">0</b><span>files written at once</span></div>
+    </div>
+
+    <details class="numbers reveal">
+      <summary>See all the numbers</summary>
+      <div class="numbers-body">
+        <p>Extraction time on one Windows PC with 24 cores; each tool extracted every archive three times into an empty folder, producing the same files, and the best time counts. Fastest in bold. Anchor is faster on archives with many files; with one or a few large files every tool waits on decompression, and 7-Zip and WinRAR are slightly faster on large 7Z and RAR files.</p>
+        <div class="table-wrap"><table data-numbers></table></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- features -->
+  <section class="section" id="features">
+    <p class="kicker reveal">Features</p>
+    <h2 class="reveal">Everything an archive tool should do, and a few things none do.</h2>
+    <div class="features">
+      <article class="feature card reveal" style="--d: 0"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/></svg></span><h3>Open from a link</h3><p>Paste a ZIP's web address and browse it at once. Only the files you open are downloaded.</p></article>
+      <article class="feature card reveal" style="--d: 1"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg></span><h3>Repair broken ZIPs</h3><p>A download that stopped at 99% is rebuilt from everything still readable.</p></article>
+      <article class="feature card reveal" style="--d: 2"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.3 3.9 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span><h3>Safety check first</h3><p>Flags disguised programs like invoice.pdf.exe, unsafe paths and zip bombs before anything touches your disk.</p></article>
+      <article class="feature card reveal" style="--d: 3"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></span><h3>Undo</h3><p>Files appear only when the whole extraction worked, and Undo takes them back.</p></article>
+      <article class="feature card reveal" style="--d: 4"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/></svg></span><h3>Extract many at once</h3><p>Pick a stack of archives and one folder; each gets its own folder there.</p></article>
+      <article class="feature card reveal" style="--d: 5"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><h3>Preview inside</h3><p>Images, video, audio, PDF and text, straight from the archive. Search names or text inside files.</p></article>
+      <article class="feature card reveal" style="--d: 6"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18M12 12h9M16.5 12v9"/></svg></span><h3>Size map</h3><p>See what takes the space and find duplicate files, with how much they waste.</p></article>
+      <article class="feature card reveal" style="--d: 7"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span><h3>Passwords and recovery data</h3><p>AES-256 encryption, split volumes, and 5–20% repair data so damage can be fixed later.</p></article>
+      <article class="feature card reveal" style="--d: 8"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></svg></span><h3>Explorer and command line</h3><p>Right-click to extract, preview archives in Explorer's preview pane, or script it with the <code>anchor</code> command.</p></article>
+    </div>
+
+    <div class="shots">
+      <figure class="reveal" style="--d: 0"><img src="assets/shots/repair-task.webp" alt="Anchor's task list: a cut-off ZIP repaired, 7 files recovered" loading="lazy" width="1239" height="780"><figcaption>A cut-off download, rebuilt</figcaption></figure>
+      <figure class="reveal" style="--d: 1"><img src="assets/shots/safety-dialog.webp" alt="Anchor's safety check warning about invoice.pdf.exe" loading="lazy" width="1239" height="780"><figcaption>Caught before it reached the disk</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- compare -->
+  <section class="section" id="compare">
+    <p class="kicker reveal">Compare</p>
+    <h2 class="reveal">Anchor, 7-Zip and WinRAR</h2>
+    <div class="table-wrap card reveal">
+      <table class="compare">
+        <thead><tr><th></th><th>Anchor</th><th>7-Zip</th><th>WinRAR</th></tr></thead>
+        <tbody>
+          <tr><td>Extracts many files 2× faster</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+          <tr><td>Opens a ZIP from a link without downloading it all</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+          <tr><td>Repairs damaged ZIPs without recovery data</td><td class="yes">✓</td><td class="no">—</td><td class="yes">✓</td></tr>
+          <tr><td>Recovery data for any archive</td><td class="yes">✓</td><td class="no">—</td><td>RAR only</td></tr>
+          <tr><td>Safety check for disguised programs and zip bombs</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+          <tr><td>Undo an extraction</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+          <tr><td>Size map with duplicate files</td><td class="yes">✓</td><td class="no">—</td><td class="no">—</td></tr>
+          <tr><td>Creates RAR archives</td><td class="no">—</td><td class="no">—</td><td class="yes">✓</td></tr>
+          <tr><td>Free, with no nag screen</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- download -->
+  <section class="section download" id="download">
+    <div class="grid-bg" aria-hidden="true"></div>
+    <div class="mark small reveal"><img src="assets/logo.png" alt="" width="88" height="88"></div>
+    <h2 class="reveal">Get Anchor</h2>
+    <p class="sub reveal">Free for Windows 10 and 11. No admin rights needed, and it keeps itself up to date.</p>
+    <div class="cta reveal">
+      <a class="btn btn-primary" href="https://github.com/realhenners/anchor-releases/releases/latest" data-download>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+        Download for Windows
+      </a>
+      <p class="meta" data-download-meta>Free · Windows 10&nbsp;and&nbsp;11 · x64 and ARM64</p>
+    </div>
+
+    <div class="files card reveal" data-files hidden>
+      <h3>All downloads <span data-version></span></h3>
+      <div data-file-list></div>
+      <p class="small">Check a download in PowerShell: <code>Get-FileHash .\Anchor-Setup-&lt;version&gt;.exe</code> and compare it with the SHA-256 above.</p>
+    </div>
+
+    <div class="smartscreen card reveal">
+      <h3>“Windows protected your PC”?</h3>
+      <p>The installer is not code-signed yet, so Windows doesn't recognise it. Click <b>More info</b>, then <b>Run anyway</b>. Every release is built by GitHub Actions from tagged code and scanned by about 70 antivirus engines on VirusTotal.</p>
+    </div>
+  </section>
+
+  <!-- faq -->
+  <section class="section" id="faq">
+    <p class="kicker reveal">FAQ</p>
+    <h2 class="reveal">Questions</h2>
+    <div class="faq">
+      <details class="reveal"><summary>Is Anchor really free?</summary><div><p>Yes, at home and at work. No ads, no trial, no nag screen.</p></div></details>
+      <details class="reveal"><summary>Does it collect any data?</summary><div><p>No. Anchor goes online only to check GitHub for a new version when it starts (you can switch that off) and to fetch an archive you open from a link. No accounts, no tracking, no telemetry.</p></div></details>
+      <details class="reveal"><summary>Is it safe? Why does Windows warn me?</summary><div><p>The warning appears because the installer isn't code-signed yet; certificates are expensive for a solo developer. Each release lists SHA-256 checksums and a VirusTotal scan link, so you can check exactly what you downloaded.</p></div></details>
+      <details class="reveal"><summary>Is it faster for every archive?</summary><div><p>It's about 2× faster on archives with many files, which is most of them: mods, projects, photos, backups. With one or a few large files every tool waits on decompression and the results are about the same. All the measured numbers are in the Speed section.</p></div></details>
+      <details class="reveal"><summary>Can it create RAR archives?</summary><div><p>Anchor opens and extracts RAR, but creates ZIP, 7Z, TAR.ZST and TAR.GZ. The RAR format is proprietary.</p></div></details>
+      <details class="reveal"><summary>Is it open source?</summary><div><p>Anchor is free, closed-source software. It builds on open-source parts, credited with their licences in the app: 7-Zip (LGPL), par2cmdline (GPL) and Electron (MIT).</p></div></details>
+      <details class="reveal"><summary>Is there a Mac or Linux version?</summary><div><p>Not yet. Anchor is made for Windows 10 and 11 on x64 and ARM64 PCs.</p></div></details>
+      <details class="reveal"><summary>How do I uninstall it?</summary><div><p>Settings › Apps › Installed apps › Anchor › Uninstall. Your settings can be removed too.</p></div></details>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <a class="brand" href="#top"><img src="assets/logo.png" alt="" width="22" height="22"><span>ANCHOR</span></a>
+  <nav aria-label="Links">
+    <a href="https://github.com/realhenners/anchor-releases/releases">Releases</a>
+    <a href="https://github.com/realhenners/anchor-releases/issues/new/choose">Report a bug</a>
+    <a href="https://github.com/realhenners/anchor-releases/blob/main/LICENSE.txt">Licence</a>
+  </nav>
+  <p>© 2026 realhenners. Free to use, all rights reserved.</p>
+</footer>
+
+<script src="script.js" defer></script>
+</body>
+</html>
