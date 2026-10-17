@@ -47,9 +47,9 @@ if (shot && !calm) {
 // ---------- the race: measured times, played back in real time ----------
 // bench-results.json, ZIP archives, best of three runs, milliseconds: Anchor, WinRAR, 7-Zip
 const SETS = {
-  small: { times: [2549, 5251, 5870], caption: 'A ZIP with 4,000 small files, played back in real time.' },
-  mod: { times: [610, 1460, 1020], caption: 'A game mod pack: 603 files, 200 MB, played back in real time.' },
-  large: { times: [406, 583, 354], caption: 'One 200 MB file: every tool waits on decompression, and 7-Zip is a little quicker here.' },
+  small: { times: [910, 4278, 3864], caption: 'A ZIP with 4,000 small files, played back in real time.' },
+  mod: { times: [265, 1101, 560], caption: 'A game mod pack: 603 files, 200 MB, played back in real time.' },
+  large: { times: [304, 557, 296], caption: 'One 200 MB file: every tool waits on decompression, so the times are close.' },
 };
 const race = $('[data-race]');
 const lanes = race ? $$('.lane', race) : [];
@@ -113,16 +113,16 @@ $$('[data-count]').forEach((el) => counted.observe(el));
 
 // ---------- all the numbers ----------
 const NUMBERS = [
-  ['4,000 small files', [['ZIP', 2549, 5870, 5251], ['7Z', 2355, 5776, null], ['RAR', 2556, 5121, 3751], ['TAR.GZ', 2166, 5777, 10851], ['TAR.ZST', 3327, 6486, 10948]]],
-  ['Mod pack, 603 files, 200 MB', [['ZIP', 610, 1020, 1460], ['7Z', 687, 1078, 11692], ['RAR', 671, 1033, 961], ['TAR.GZ', 539, 1203, 2406], ['TAR.ZST', 663, 1191, 1809]]],
-  ['8 large files, 320 MB', [['ZIP', 325, 515, 879], ['7Z', 402, 318, 827], ['RAR', 374, 275, 260], ['TAR.GZ', 640, 827, 1204], ['TAR.ZST', 260, 434, 320]]],
-  ['1 large file, 200 MB', [['ZIP', 406, 354, 583], ['7Z', 312, 244, 335], ['RAR', 641, 566, 326], ['TAR.GZ', 448, 550, 759], ['TAR.ZST', 205, 298, 238]]],
+  ['4,000 small files', [['ZIP', 910, 3864, 4278], ['7Z', 1127, 2927, null], ['RAR', 920, 2472, 1775], ['TAR.GZ', 1136, 2541, 9037], ['TAR.ZST', 1422, 2459, 8764]]],
+  ['Mod pack, 603 files, 200 MB', [['ZIP', 265, 560, 1101], ['7Z', 380, 614, null], ['RAR', 224, 595, 743], ['TAR.GZ', 367, 711, 2066], ['TAR.ZST', 479, 708, 1187]]],
+  ['8 large files, 320 MB', [['ZIP', 165, 444, 775], ['7Z', 256, 261, 368], ['RAR', 161, 204, 200], ['TAR.GZ', 623, 678, 1082], ['TAR.ZST', 240, 314, 253]]],
+  ['1 large file, 200 MB', [['ZIP', 304, 296, 557], ['7Z', 216, 200, 292], ['RAR', 522, 524, 278], ['TAR.GZ', 430, 508, 757], ['TAR.ZST', 206, 228, 201]]],
 ];
 const seconds = (ms) => (ms === null ? 'over 2 min' : `${(ms / 1000).toFixed(2)} s`);
 if ($('[data-numbers]')) $('[data-numbers]').innerHTML = `<thead><tr><th>Archive</th><th>Anchor</th><th>7-Zip 26.04</th><th>WinRAR 7.23</th></tr></thead><tbody>${NUMBERS.flatMap(([set, rows]) =>
   rows.map(([format, ...times]) => {
     const best = Math.min(...times.filter((t) => t !== null));
-    return `<tr><td>${set} · ${format}</td>${times.map((t) => `<td>${t === best ? `<b>${seconds(t)}</b>` : seconds(t)}</td>`).join('')}</tr>`;
+    return `<tr><th scope="row">${set} · ${format}</th>${times.map((t) => `<td>${t === best ? `<b>${seconds(t)}</b>` : seconds(t)}</td>`).join('')}</tr>`;
   })
 ).join('')}</tbody>`;
 
@@ -148,28 +148,36 @@ $$('details').forEach((details) => {
 
 // ---------- downloads: the newest release, the right installer for this PC ----------
 const size = (bytes) => `${(bytes / 1048576).toFixed(1)} MB`;
-async function architecture() {
-  // Chromium browsers say whether the PC is ARM; others are almost always x64
+async function architecture(os) {
+  // Chromium browsers say whether the computer is ARM. Others: a PC is almost always x64, a Mac
+  // almost always Apple silicon (Safari does not tell), and the switch link covers the rest.
   try {
     const { architecture: arch } = await navigator.userAgentData.getHighEntropyValues(['architecture']);
     return arch === 'arm' ? 'arm64' : 'x64';
   } catch {
-    return 'x64';
+    return os === 'mac' ? 'arm64' : 'x64';
   }
 }
 // every installer in a release, by system, processor and package type
 const KINDS = [
   { key: 'windows-x64', label: 'Windows · x64', test: /Setup-[\d.]+\.exe$/ },
   { key: 'windows-arm64', label: 'Windows · ARM64', test: /Setup-[\d.]+-arm64\.exe$/ },
+  { key: 'mac-arm64', label: 'Mac · Apple silicon', test: /-arm64\.dmg$/ },
+  { key: 'mac-x64', label: 'Mac · Intel', test: /-x64\.dmg$/ },
   { key: 'linux-x64', label: 'Linux AppImage · x64', test: /x86_64\.AppImage$/ },
   { key: 'linux-arm64', label: 'Linux AppImage · ARM64', test: /arm64\.AppImage$/ },
   { key: 'deb-x64', label: 'Linux .deb · x64', test: /amd64\.deb$/ },
   { key: 'deb-arm64', label: 'Linux .deb · ARM64', test: /arm64\.deb$/ },
 ];
-const SYSTEM = { windows: 'Windows 10 and 11', linux: 'AppImage for any Linux' };
+const SYSTEM = { windows: 'Windows 10 and 11', mac: 'macOS 12 or later', linux: 'AppImage for any Linux' };
+const NAMES = { windows: 'Windows', mac: 'Mac', linux: 'Linux' };
+// how a processor is called on each system
+const chip = (target, arch) => (target === 'mac' ? (arch === 'arm64' ? 'Apple silicon' : 'Intel') : arch === 'arm64' ? 'ARM64' : 'x64');
 function system() {
   const ua = navigator.userAgent;
   if (/Windows/i.test(ua) && !/Windows Phone/i.test(ua)) return 'windows';
+  // an iPad asks for the desktop site as a "Macintosh" too, but has a touch screen
+  if (/Macintosh|Mac OS X/i.test(ua) && !(navigator.maxTouchPoints > 1)) return 'mac';
   if (/Linux|X11|CrOS/i.test(ua) && !/Android/i.test(ua)) return 'linux';
   return 'other';
 }
@@ -188,9 +196,9 @@ async function downloads() {
   }
   const version = release.tag_name.replace(/^v/, '');
   const builds = Object.fromEntries(KINDS.map((kind) => [kind.key, release.assets.find((a) => kind.test.test(a.name))]));
-  // Linux visitors get Linux files, everyone else the Windows ones
-  const target = os === 'linux' && builds['linux-x64'] ? 'linux' : 'windows';
-  let arch = await architecture();
+  // Mac and Linux visitors get their own files (once the release has them), everyone else Windows'
+  const target = os !== 'other' && builds[`${os}-x64`] ? os : 'windows';
+  let arch = await architecture(os);
   const point = () => {
     const build = builds[`${target}-${arch}`] || builds[`${target}-x64`];
     if (!build) return;
@@ -199,13 +207,13 @@ async function downloads() {
       a.removeAttribute('target');
       // the button's label is its last text node, after the icon
       const label = [...a.childNodes].reverse().find((node) => node.nodeType === 3 && node.textContent.trim());
-      if (label && /Download for/.test(label.textContent)) label.textContent = ` Download for ${target === 'linux' ? 'Linux' : 'Windows'} `;
+      if (label && /Download for/.test(label.textContent)) label.textContent = ` Download for ${NAMES[target]} `;
     });
-    $$('[data-download-meta]').forEach((p) => (p.textContent = `Version ${version} · ${arch === 'arm64' ? 'ARM64' : 'x64'} · ${size(build.size)} · ${SYSTEM[target]}`));
+    $$('[data-download-meta]').forEach((p) => (p.textContent = `Version ${version} · ${chip(target, arch)} · ${size(build.size)} · ${SYSTEM[target]}`));
     const switcher = $('[data-arch-switch]');
     if (!switcher) return;
     switcher.hidden = !builds[`${target}-arm64`] || os === 'other';
-    switcher.textContent = `Need the ${arch === 'arm64' ? 'x64' : 'ARM64'} version?`;
+    switcher.textContent = `Need the ${chip(target, arch === 'arm64' ? 'x64' : 'arm64')} version?`;
   };
   $('[data-arch-switch]')?.addEventListener('click', () => {
     arch = arch === 'arm64' ? 'x64' : 'arm64';
